@@ -57,3 +57,38 @@ def sig_energy(signal):
         energy += np.power(abs(signal[i]), 2)
     return energy
 
+#ce qui est en dessous est en cours de travail, pas sur que ca soit bon
+"""
+def pitch(frames,Fs, threshold=10, maxlags=800000, printing=False):
+    f0 = []
+    for i in range(0, len(frames)):
+
+        if sig_energy(frames[i]) > threshold:
+
+            a, b, *_ = plt.acorr(frames[i], maxlags=maxlags)  # we only need b, aka the autocorrelation vector
+
+            e = argrelextrema(b, np.greater)  # Local maximum of b, the autocorrelation vector
+            loc_max_temp = np.array(e[0])  # temp list
+            loc_max = []
+            maxt = 0
+            for h in range(0, len(loc_max_temp)):
+                temp = loc_max_temp[h]
+                if b[temp] > maxt:
+                    loc_max.append(loc_max_temp[h] - maxlags)
+                    maxt = b[temp]
+
+            loc_max = np.array(loc_max)
+            if len(loc_max) > 1:
+                dist = 0
+                for j in range(0, len(loc_max) - 1):
+                    dist += loc_max[j + 1] - loc_max[j]
+                dist = dist / (len(loc_max) - 1)
+                tps = dist / Fs
+                f0.append(1 / tps)
+            else:
+                f0.append(0)
+        else:
+            f0.append(0)
+    f0 = np.array(f0)
+    return f0
+"""
