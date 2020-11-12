@@ -6,15 +6,15 @@ def norming(signal):
     entrée :
         signal: le signal qu on va normaliser
     sortie:
-        signal_normed : signal normalisé
+        signal_normed : le signal normalisé
     '''
 
-    sig_size = len(signal)
+    signal_size = len(signal)
     max_sig = 0
-    for i in range(0, sig_size): #on trouve le maximum global du signal
+    for i in range(0, signal_size): #on cherche le max du signal
         if abs(signal[i]) > max_sig:
             max_sig = abs(signal[i])
-    signal_normed = signal / max_sig #on divise par le maximum global
+    signal_normed = signal / max_sig #on divise par le maximum global pour normaliser
 
     return signal_normed
 
@@ -23,7 +23,7 @@ def framing(signal, shifting_step=2500, frames_size=2500):
     '''
     entrée :
         signal: le signal qu'on veut fragmenter
-        shifting_step: la pas entre deux devuts de frames
+        shifting_step: la pas entre deux débuts de frames
         frames_size: la taille d'un fragment en nbr d echantillons
     Sortie :
          frames : array avec tout les frames
@@ -34,14 +34,16 @@ def framing(signal, shifting_step=2500, frames_size=2500):
     i = 0
     while True:
         if (i + frames_size <= signal_size):
-            fr_act_size = i + frames_size
+            end_frame = i + frames_size
         else:
-            fr_act_size = signal_size
-        frames.append(signal[i:fr_act_size])
+            end_frame = signal_size # si le frame "dépasse" du signal a la fin alors on en créer un plus petit qui s arrette fatalement au dernier sample du signal
+        frames.append(signal[i:end_frame])
         i += shifting_step
         if (i >= signal_size):
             break
     frames = np.array(frames)
+
+    return frames
 
 
 def sig_energy(signal):
@@ -53,7 +55,7 @@ def sig_energy(signal):
     '''
 
     energy = 0
-    for i in range(0, len(signal)):
+    for i in range(len(signal):
         energy += np.power(abs(signal[i]), 2)
     return energy
 
