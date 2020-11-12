@@ -65,10 +65,10 @@ def pitch(frames,Fs, threshold=10, maxlags=800000, printing=False):
 
         if sig_energy(frames[i]) > threshold:
 
-            a, b, *_ = plt.acorr(frames[i], maxlags=maxlags)  # we only need b, aka the autocorrelation vector
+            a, b, *_ = plt.acorr(frames[i], maxlags=maxlags)  # on veut uniquement la fct d autocorrélation (b)
 
-            e = argrelextrema(b, np.greater)  # Local maximum of b, the autocorrelation vector
-            loc_max_temp = np.array(e[0])  # temp list
+            e = argrelextrema(b, np.greater)  # recherche du max local de b
+            loc_max_temp = np.array(e[0])  
             loc_max = []
             maxt = 0
             for h in range(0, len(loc_max_temp)):
