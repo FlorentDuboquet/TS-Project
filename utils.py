@@ -55,7 +55,7 @@ def sig_energy(signal):
     '''
 
     energy = 0
-    for i in range(len(signal):
+    for i in range(len(signal)):
         energy += np.power(abs(signal[i]), 2)
     return energy
 
