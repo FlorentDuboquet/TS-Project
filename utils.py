@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scikit_talkbox_lpc import lpc_ref
 from filterbanks.py import filter_banks
+import scipy as sc
 
 
 def norming(signal):
@@ -22,7 +23,9 @@ def norming(signal):
     return signal_normed
 
 
-def framing(signal, shifting_step=2500, frames_size=2500):
+def framing(signal,shifting_step = 2500,frames_size = 2500):
+
+
     '''
     entrée :
         signal: le signal qu'on veut fragmenter
@@ -156,7 +159,9 @@ def formant (frames,fs):
 
     return frequences
 
-def MFCC (signal) :
+def MFCC (signal, samples_freq) :
+    shifting_step = 2500
+    frames_size = 2500
     # preanalyse
     signal = high_Pass(signal, a=0.97)
 
@@ -175,6 +180,12 @@ def MFCC (signal) :
         powerSpectrum.append((np.power(np.linalg.norm(np.asarray(np.fft.fft(elem,ntfd)))),2)/ntfd)
 
     # passage dans le filter bank
+    result = filter_banks(powerSpectrum,samples_freq)
 
+    #Discrete Cosine Transform as given in the protocole
+    result = sc.fftpack.dct(filter_banks, type=2, axis=1, norm='ortho')
 
-    return frames
+    # on garde que les 13 premiers
+    result = result[:13]
+
+    return result
