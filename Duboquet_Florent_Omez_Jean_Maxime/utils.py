@@ -133,8 +133,6 @@ def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
 
         return f0
 
-
-
 def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     filtred_signal = []
     for i in range(0, len(signal) - 1):
@@ -189,14 +187,12 @@ def formant (frames,fs):
 
     return frequences
 
-def MFCC (signal, samples_freq) :
-
-
+def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # preanalyse
     signal = high_Pass(signal, a=0.97)
 
     # division en frames
-    signal = framing(signal)
+    signal = framing(signal,sample_frequence,frame_width,shift_width)
 
     # hamming
     for i in range(len(signal)-1) :
@@ -210,7 +206,7 @@ def MFCC (signal, samples_freq) :
         powerSpectrum.append((np.power(np.linalg.norm(np.asarray(np.fft.fft(elem,ntfd)))),2)/ntfd)
 
     # passage dans le filter bank
-    result = filter_banks(powerSpectrum,samples_freq)
+    result = filter_banks(powerSpectrum,sample_frequence)
 
     #Discrete Cosine Transform as given in the protocole
     result = fft.dct(filter_banks, type=2, axis=1, norm='ortho')
