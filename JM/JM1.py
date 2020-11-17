@@ -133,7 +133,42 @@ def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
 
         return f0
 #pitch_cepstrum([0, 3, 3, -4, -4, -3, 1, 3, 4, 3], 1000, 3 / 1000, 2 / 1000, 2)
+"""
+def pitch(frames, Fs, threshold=10, maxlags=800000):
+        f0 = []
+        for i in range(0, len(frames)):
 
+                if sig_energy(frames[i]) > threshold:
+
+                        # calcul l autocorrélation (2eme element)
+                        x, y, *_ = plt.acorr(frames[i], maxlags=maxlags)
+                        # recherche du max local de l autocorrelogramme
+
+                        liste_temp = argrelextrema(y, np.greater)
+                        loc_max_temp = np.array(liste_temp[0])
+                        loc_max = []
+                        maxt = 0
+                        for h in range(0, len(loc_max_temp)):
+                                temp = loc_max_temp[h]
+                                if b[temp] > maxt:
+                                        loc_max.append(loc_max_temp[h] - maxlags)
+                                        maxt = y[temp]
+
+                        loc_max = np.array(loc_max)
+                        if len(loc_max) > 1:
+                                dist = 0
+                                for j in range(0, len(loc_max) - 1):
+                                        dist += loc_max[j + 1] - loc_max[j]
+                                dist = dist / (len(loc_max) - 1)
+                                tps = dist / Fs
+                                f0.append(1 / tps)
+                        else:
+                                f0.append(0)
+                else:
+                        f0.append(0)
+        f0 = np.array(f0)
+        return f0
+"""
 #C. Formants
 
 def formants(signal,sample_frequence,frame_width,shift_width)
