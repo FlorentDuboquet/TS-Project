@@ -192,12 +192,6 @@ def formant(signal,fs):
     return frequences
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
-    #pre set
-    signal = normalization(signal)
-
-
-
-
     # preanalyse
     signal = high_Pass(signal, a=0.97)
 
