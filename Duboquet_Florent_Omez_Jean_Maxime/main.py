@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from utils import random_select_utterances,plot_signal_and_energy_per_frame,pitch_autocorrelation,energy,MFCC
+from utils import random_select_utterances,plot_signal_and_energy_per_frame,pitch_autocorrelation,energy,formant,MFCC
 
 
 #Energy of the voiced and unvoiced sounds
@@ -25,6 +25,7 @@ threshold=50
 list_sexes=[]
 list_f0=[]
 list_energy=[]
+list_formant=[]
 list_MFCC=[]
 for i in range(len(utterances)):
     if 'woman' in utterances[i]:
@@ -42,13 +43,17 @@ for i in range(len(utterances)):
             f0_voiced.append(f0)
     list_f0.append(mean(f0_voiced))
 
+    list_formant.append(formant())
+
     list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
 
 data_frame = pd.DataFrame()
 data_frame['Sexe']=list_sexes
 data_frame['Energy']=list_energy
-data_frame['f0']=list_f0
+data_frame['F0']=list_f0
+data_frame['Formant']=list_formant
 data_frame['MFCC']=list_MFCC
+
 
 print(data_frame)
 

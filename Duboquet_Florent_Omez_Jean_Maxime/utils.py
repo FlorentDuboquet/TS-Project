@@ -143,7 +143,6 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     filtred_signal = np.array(filtred_signal) # on change le typ de la liste avant le return
     return filtred_signal
 
-
 def formant (frames,fs):
 
     frequences = []
