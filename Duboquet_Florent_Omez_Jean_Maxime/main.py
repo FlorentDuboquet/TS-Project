@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from utils import random_select_utterances,plot_signal_and_energy_per_frame,pitch_autocorrelation,energy,formant,MFCC
+from utils import random_select_utterances,plot_signal_and_energy_per_frame,energy,pitch_autocorrelation,formant,MFCC
 
 
 #Energy of the voiced and unvoiced sounds
