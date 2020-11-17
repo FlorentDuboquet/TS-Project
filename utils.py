@@ -154,3 +154,8 @@ def formant (frames,fs):
     frequences = np.sort(frequences)
 
     return frequences
+
+def MFCC () :
+    x=0
+
+    return x
