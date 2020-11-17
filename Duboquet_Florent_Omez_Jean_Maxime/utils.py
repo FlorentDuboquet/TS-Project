@@ -144,9 +144,13 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     return filtred_signal
 
 
-def formant (frames,fs):
+def formant(signal,fs):
 
-    frequences = []
+    #pre set
+    signal = normalization(signal)
+    frames = framing(signal,sample_frequence,frame_width,shift_width)
+
+    frequences=[]
 
     # ici on va devoir utiliser la fct lpc_ref fournie dans
     # scikit_talkbox_lpc.py qui retourne les prédiction des coefficient LPC
@@ -188,6 +192,12 @@ def formant (frames,fs):
     return frequences
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
+    #pre set
+    signal = normalization(signal)
+
+
+
+
     # preanalyse
     signal = high_Pass(signal, a=0.97)
 
