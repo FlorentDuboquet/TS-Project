@@ -8,3 +8,5 @@ for utterance in utterances:
         plot_signal_and_energy_per_frame(utterance,90 / 1000, 90 / 1000)
 '''
 
+utterances=random_select_utterances(['samples/man','samples/woman'],15)
+print(utterances)

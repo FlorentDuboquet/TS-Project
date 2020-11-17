@@ -8,7 +8,7 @@ from os import listdir
 from xcorr import xcorr
 import warnings
 from scikit_talkbox_lpc import lpc_ref
-from filterbanks.py import filter_banks
+from filterbanks import filter_banks
 import scipy.fftpack as fft
 warnings.filterwarnings("ignore")
 
@@ -145,8 +145,7 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     return filtred_signal
 
 
-def formant (frames,fs):
-
+def formant(frames,fs):
     frequences = []
 
     # ici on va devoir utiliser la fct lpc_ref fournie dans
