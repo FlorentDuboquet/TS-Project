@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scikit_talkbox_lpc import lpc_ref
+from filterbanks.py import filter_banks
 
 
 def norming(signal):
@@ -155,7 +156,25 @@ def formant (frames,fs):
 
     return frequences
 
-def MFCC () :
-    x=0
+def MFCC (signal) :
+    # preanalyse
+    signal = high_Pass(signal, a=0.97)
 
-    return x
+    # division en frames
+    signal = framing(signal)
+
+    # hamming
+    for i in range(len(signal)-1) :
+        ham = np.hamming(len(signal[i]))
+        signal[i] = signal[i] * ham
+
+    #compute the power spectrum of the signal periodogram
+    powerSpectrum = []
+    ntfd = 512
+    for elem in signal :
+        powerSpectrum.append((np.power(np.linalg.norm(np.asarray(np.fft.fft(elem,ntfd)))),2)/ntfd)
+
+    # passage dans le filter bank
+
+
+    return frames
