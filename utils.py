@@ -61,23 +61,24 @@ def sig_energy(signal):
 
 #ce qui est en dessous est en cours de travail, pas sur que ca soit bon
 """
-def pitch(frames,Fs, threshold=10, maxlags=800000, printing=False):
+def pitch(frames,Fs, threshold=10, maxlags=800000):
     f0 = []
     for i in range(0, len(frames)):
 
         if sig_energy(frames[i]) > threshold:
+            
+            # calcul l autocorrélation (2eme element)
+            x, y, *_ = plt.acorr(frames[i], maxlags=maxlags)  
 
-            a, b, *_ = plt.acorr(frames[i], maxlags=maxlags)  # on veut uniquement la fct d autocorrélation (b)
-
-            e = argrelextrema(b, np.greater)  # recherche du max local de b
-            loc_max_temp = np.array(e[0])  
+            liste_temp = argrelextrema(y, np.greater)  # recherche du max local de l autocorrelogramme
+            loc_max_temp = np.array(liste_temp[0])  
             loc_max = []
             maxt = 0
             for h in range(0, len(loc_max_temp)):
                 temp = loc_max_temp[h]
                 if b[temp] > maxt:
                     loc_max.append(loc_max_temp[h] - maxlags)
-                    maxt = b[temp]
+                    maxt = y[temp]
 
             loc_max = np.array(loc_max)
             if len(loc_max) > 1:
