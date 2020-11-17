@@ -163,7 +163,7 @@ def formant(frames,fs):
         # on calcule les racines du LPC :
         lpc = np.roots(temp)
 
-        # on ne conserve que l'un des deux complxes conjugués
+        # on ne conserve que l'un des deux complexes conjugués
         lpc = lpc[np.imag(lpc) >= 0]
 
         temp = []
@@ -181,14 +181,15 @@ def formant(frames,fs):
         frequences.append(temp)
     # on change le type de la liste
     frequences = np.array(frequences)
+
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
 
     return frequences
 
 def MFCC (signal, samples_freq) :
-    shifting_step = 2500
-    frames_size = 2500
+
+
     # preanalyse
     signal = high_Pass(signal, a=0.97)
 
