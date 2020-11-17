@@ -9,4 +9,5 @@ for utterance in utterances:
 '''
 
 utterances=random_select_utterances(['samples/man','samples/woman'],15)
-print(utterances)
+
+
