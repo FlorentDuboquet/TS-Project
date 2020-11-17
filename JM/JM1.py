@@ -16,6 +16,9 @@ import random
 import os
 import cmath
 from xcorr import xcorr
+from random import randint
+import warnings
+warnings.filterwarnings("ignore")
 
 '''I. SIGNAL PRE-PROCESSING'''
 
@@ -53,13 +56,16 @@ def energy(signal):
 #B. Pitch
         #1. Voiced and unvoiced sounds
 
-def random_select_of_5_utterances_per_speacker():
+def random_select_utterances(folder_addresses,number_of_utterances):
         utterances=[]
-
+        for folder_adresse in folder_addresses:
+                file_adresses = os.listdir(folder_adresse)
+                for i in range(number_of_utterances):
+                        utterances.append(folder_adresse+'/'+file_adresses[randint(0,len(file_adresses)-1)])
         return utterances
 
-def plot_signal_and_energy_per_frame(utterance,frame_width, shift_width):
-        sample_frequence,signal=utterance
+def plot_signal_and_energy_per_frame(file_adresse,frame_width, shift_width):
+        sample_frequence,signal=wavfile.read(file_adresse)
 
         signal = normalization(signal)
 
@@ -81,7 +87,7 @@ def plot_signal_and_energy_per_frame(utterance,frame_width, shift_width):
 
         plt.show()
 
-utterances=random_select_of_5_utterances_per_speacker()
+utterances=random_select_utterances(['samples_test/man','samples_test/woman'],5)
 for utterance in utterances:
         plot_signal_and_energy_per_frame(utterance,90 / 1000, 90 / 1000)
 
@@ -96,19 +102,43 @@ def pitch_autocorrelation(signal,sample_frequence,frame_width,shift_width,thresh
         for frame in frames:
                 frames_energy.append(energy(frame))
 
-        f0=[]
+        fundamental_frequency_per_frame=[]
         for i in range(len(frames)):
-                if frames_energy[i]>threshold:
-                        print('voiced')
-                        lags, corr=xcorr(frames[i], maxlag=int(sample_frequence/50))
-                        print(lags,corr)
-                        f0.append(10)
-                else:
-                        print('unvoiced')
-                        f0.append(0)
+                if frames_energy[i]>threshold: #Voiced
+                        lags, corr = xcorr(frames[i], maxlag=int(sample_frequence/50))
 
-        return f0
-#pitch_autocorrelation([0, 3, 3, -4, -4, -3, 1, 3, 4, 3], 1000, 3 / 1000, 2 / 1000, 2)
+                        peaks,properties=sig.find_peaks(corr)
+
+                        peaks_prominences=sig.peak_prominences(signal,peaks)[0]
+
+                        peaks_prominences=list(peaks_prominences)
+                        index_max_1=peaks_prominences.index(max(peaks_prominences))
+
+                        peaks_prominences_copy=peaks_prominences
+                        del peaks_prominences_copy[index_max_1]
+
+                        index_max_2 = peaks_prominences_copy.index(max(peaks_prominences_copy))
+
+                        if index_max_2 >= index_max_1:
+                                index_max_2+=1
+
+                        postion_max_1=peaks[index_max_1]
+                        postion_max_2 = peaks[index_max_2]
+
+                        distance=abs(postion_max_1-postion_max_2)
+
+                        fundamental_period=distance/sample_frequence
+
+                        fundamental_frequency=1/fundamental_period
+
+                else:# Unvoiced
+                        fundamental_frequency=0
+
+                fundamental_frequency_per_frame.append(fundamental_frequency)
+
+        return fundamental_frequency_per_frame
+#fs, signal = wavfile.read('arctic_a0001H.wav')
+#print(pitch_autocorrelation(signal, fs,  100/1000, 100/1000, 10))
 
         #3. Cepstrum-Based Pitch Estimation System
 
@@ -133,45 +163,10 @@ def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
 
         return f0
 #pitch_cepstrum([0, 3, 3, -4, -4, -3, 1, 3, 4, 3], 1000, 3 / 1000, 2 / 1000, 2)
-"""
-def pitch(frames, Fs, threshold=10, maxlags=800000):
-        f0 = []
-        for i in range(0, len(frames)):
 
-                if sig_energy(frames[i]) > threshold:
-
-                        # calcul l autocorrélation (2eme element)
-                        x, y, *_ = plt.acorr(frames[i], maxlags=maxlags)
-                        # recherche du max local de l autocorrelogramme
-
-                        liste_temp = argrelextrema(y, np.greater)
-                        loc_max_temp = np.array(liste_temp[0])
-                        loc_max = []
-                        maxt = 0
-                        for h in range(0, len(loc_max_temp)):
-                                temp = loc_max_temp[h]
-                                if b[temp] > maxt:
-                                        loc_max.append(loc_max_temp[h] - maxlags)
-                                        maxt = y[temp]
-
-                        loc_max = np.array(loc_max)
-                        if len(loc_max) > 1:
-                                dist = 0
-                                for j in range(0, len(loc_max) - 1):
-                                        dist += loc_max[j + 1] - loc_max[j]
-                                dist = dist / (len(loc_max) - 1)
-                                tps = dist / Fs
-                                f0.append(1 / tps)
-                        else:
-                                f0.append(0)
-                else:
-                        f0.append(0)
-        f0 = np.array(f0)
-        return f0
-"""
 #C. Formants
 
-def formants(signal,sample_frequence,frame_width,shift_width)
+
 
 #D. MFCC
 
