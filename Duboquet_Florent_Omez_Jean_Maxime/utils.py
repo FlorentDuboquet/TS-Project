@@ -144,7 +144,7 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     return filtred_signal
 
 
-def formant(signal,fs):
+def formant(signal,fs,sample_frequence,frame_width,shift_width):
 
     #pre set
     signal = normalization(signal)
