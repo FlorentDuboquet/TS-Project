@@ -145,7 +145,8 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     return filtred_signal
 
 
-def formant(frames,fs):
+def formant (frames,fs):
+
     frequences = []
 
     # ici on va devoir utiliser la fct lpc_ref fournie dans
