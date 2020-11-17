@@ -7,6 +7,9 @@ from random import randint
 from os import listdir
 from xcorr import xcorr
 import warnings
+from scikit_talkbox_lpc import lpc_ref
+from filterbanks.py import filter_banks
+import scipy.fftpack as fft
 warnings.filterwarnings("ignore")
 
 def normalization(signal):
@@ -128,3 +131,90 @@ def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
                         f0.append(0)
 
         return f0
+
+
+
+def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
+    filtred_signal = []
+    for i in range(0, len(signal) - 1):
+        if i > 0:
+            filtred_signal.append(signal[i] - a * signal[i - 1])
+        else:
+            filtred_signal.append(signal[i])
+    filtred_signal = np.array(filtred_signal) # on change le typ de la liste avant le return
+    return filtred_signal
+
+
+def formant (frames,fs):
+
+    frequences = []
+
+    # ici on va devoir utiliser la fct lpc_ref fournie dans
+    # scikit_talkbox_lpc.py qui retourne les prédiction des coefficient LPC
+
+    # on applique le traitement a tout les frames :
+    for i in range(0, len(frames)):
+
+        # le filtre passe haut (définit précédement)
+        filtred_frame = high_Pass(frames[i])
+
+        # calcul du LPC grace a la fct fournie
+        temp = lpc_ref(filtred_frame, order= 10) # order peut prendre des valeurs entre 8 et 13
+
+        # on calcule les racines du LPC :
+        lpc = np.roots(temp)
+
+        # on ne conserve que l'un des deux complxes conjugués
+        lpc = lpc[np.imag(lpc) >= 0]
+
+        temp = []
+        for j in range (0,len(lpc)) :
+
+            # on calcul l'angle et on en déduit la fréquence
+            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * ( fs/8*np.pi )
+            """ !!!!!!!!!! attention ici fs devra etre précisé dans main !!!!!!! """
+
+
+            # la frequence doit etre comprise entre les seuils
+            if (freq<20000 and freq>500):
+                temp.append(freq)
+                temp.sort()
+        frequences.append(temp)
+    # on change le type de la liste
+    frequences = np.array(frequences)
+    # on trie pour les assossié plus facilement au formant
+    frequences = np.sort(frequences)
+
+    return frequences
+
+def MFCC (signal, samples_freq) :
+    shifting_step = 2500
+    frames_size = 2500
+    # preanalyse
+    signal = high_Pass(signal, a=0.97)
+
+    # division en frames
+    signal = framing(signal)
+
+    # hamming
+    for i in range(len(signal)-1) :
+        ham = np.hamming(len(signal[i]))
+        signal[i] = signal[i] * ham
+
+    #compute the power spectrum of the signal periodogram
+    powerSpectrum = []
+    ntfd = 512
+    for elem in signal :
+        powerSpectrum.append((np.power(np.linalg.norm(np.asarray(np.fft.fft(elem,ntfd)))),2)/ntfd)
+
+    # passage dans le filter bank
+    result = filter_banks(powerSpectrum,samples_freq)
+
+    #Discrete Cosine Transform as given in the protocole
+    result = fft.dct(filter_banks, type=2, axis=1, norm='ortho')
+
+    # on garde que les 13 premiers
+    result = result[:13]
+
+    return result
+
