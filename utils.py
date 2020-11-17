@@ -69,8 +69,10 @@ def pitch(frames,Fs, threshold=10, maxlags=800000):
             
             # calcul l autocorrélation (2eme element)
             x, y, *_ = plt.acorr(frames[i], maxlags=maxlags)  
-
-            liste_temp = argrelextrema(y, np.greater)  # recherche du max local de l autocorrelogramme
+            # recherche du max local de l autocorrelogramme
+            
+            
+            liste_temp = argrelextrema(y, np.greater)  
             loc_max_temp = np.array(liste_temp[0])  
             loc_max = []
             maxt = 0
