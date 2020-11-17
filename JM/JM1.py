@@ -4,21 +4,21 @@ BY DUBOQUET FLORENT AND OMEZ JEAN_MAXIME'''
 
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy as sc
 import scipy.signal as sig
+from math import ceil
+from scipy.io import wavfile
+from random import randint
+from os import listdir
+from xcorr import xcorr
+import warnings
+warnings.filterwarnings("ignore")
+
+import scipy as sc
 from scipy.signal import lfilter as fil
 from matplotlib import patches
 from matplotlib.figure import Figure
 from matplotlib import rcParams
-from math import ceil
-from scipy.io import wavfile
-import random
-import os
 import cmath
-from xcorr import xcorr
-from random import randint
-import warnings
-warnings.filterwarnings("ignore")
 
 '''I. SIGNAL PRE-PROCESSING'''
 
@@ -59,7 +59,7 @@ def energy(signal):
 def random_select_utterances(folder_addresses,number_of_utterances):
         utterances=[]
         for folder_adresse in folder_addresses:
-                file_adresses = os.listdir(folder_adresse)
+                file_adresses = listdir(folder_adresse)
                 for i in range(number_of_utterances):
                         utterances.append(folder_adresse+'/'+file_adresses[randint(0,len(file_adresses)-1)])
         return utterances
@@ -87,7 +87,7 @@ def plot_signal_and_energy_per_frame(file_adresse,frame_width, shift_width):
 
         plt.show()
 
-utterances=random_select_utterances(['samples_test/man','samples_test/woman'],5)
+utterances=random_select_utterances(['samples/man','samples/woman'],5)
 for utterance in utterances:
         plot_signal_and_energy_per_frame(utterance,90 / 1000, 90 / 1000)
 
