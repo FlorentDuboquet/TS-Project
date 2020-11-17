@@ -115,7 +115,7 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
 
 def formant (frames,fs):
 
-    formanttab = []
+    frequences = []
 
     # ici on va devoir utiliser la fct lpc_ref fournie dans
     # scikit_talkbox_lpc.py qui retourne les prédiction des coefficient LPC
@@ -139,18 +139,23 @@ def formant (frames,fs):
         for j in range (0,len(lpc)) :
 
             # on calcul l'angle et on en déduit la fréquence
-            angle = np.arctan2(np.imag(lpc[j]),np.real(lpc[j]))
-            freq = angle * ( fs/8*np.pi )  """ !!!!!!!!!! attention ici fs devra etre précisé dans main !!!!!!! """
+            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * ( fs/8*np.pi )
+            """ !!!!!!!!!! attention ici fs devra etre précisé dans main !!!!!!! """
 
 
             # la frequence doit etre comprise entre les seuils
             if (freq<20000 and freq>500):
                 temp.append(freq)
                 temp.sort()
-        formanttab.append(temp)
-
-    formanttab = np.array(formanttab)
+        frequences.append(temp)
+    # on change le type de la liste
+    frequences = np.array(frequences)
     # on trie pour les assossié plus facilement au formant
-    formanttab = np.sort(formanttab)
+    frequences = np.sort(frequences)
 
-    return formanttab
+    return frequences
+
+def MFCC () :
+    x=0
+
+    return x
