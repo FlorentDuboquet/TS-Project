@@ -35,6 +35,7 @@ def framing(signal,sample_frequence,frame_width,shift_width):
 def energy(signal):
         return sum(np.abs(signal)**2)
 
+
 def random_select_utterances(folder_addresses,number_of_utterances):
         utterances=[]
         for folder_adresse in folder_addresses:

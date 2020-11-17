@@ -1,0 +1,3 @@
+from utils import formant
+file_adresse =
+sample_frequence,signal=wavfile.read(file_adresse)
