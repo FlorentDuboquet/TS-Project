@@ -255,24 +255,23 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
                 f0_voiced.append(f0)
         list_fundamental_frequency.append(mean(f0_voiced))
 
-        # list_temp.append(formant(signal,sample_frequence,frame_width,shift_width))
-        # Value = []
-        #     for i in range(len(list_temp)):
-        #         elem = min(list_temp[i])
-        #         values.append(elem)
-        #
-        # value = min(values)
-        # list_formant.append(value)
+        list_temp=formant(signal,sample_frequence,frame_width,shift_width)
+        values = []
+        for i in range(len(list_temp)):
+            elem = min(list_temp[i])
+            values.append(elem)
+        value = min(values)
+        list_formant.append(value)
 
-        #h = MFCC(signal, sample_frequence, frame_width, shift_width)
-        # list_MFCC.append(h[0])
+        h = MFCC(signal, sample_frequence, frame_width, shift_width)
+        list_MFCC.append(h[0])
 
     data_frame = pd.DataFrame()
     data_frame['Sexe'] = list_sexe
     data_frame['Energy'] = list_energy
     data_frame['Fundamental frequency'] = list_fundamental_frequency
-    # data_frame['Formant']=list_formant
-    # data_frame['MFCC']=list_MFCC
+    data_frame['Formant']=list_formant
+    data_frame['MFCC']=list_MFCC
 
     return data_frame
 

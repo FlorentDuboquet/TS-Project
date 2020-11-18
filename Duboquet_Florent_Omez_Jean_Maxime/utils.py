@@ -181,7 +181,7 @@ def formant(signal,sample_frequence,frame_width,shift_width):
         lpc = lpc[np.imag(lpc) >= 0]
 
         temp = []
-        for j in range(0,len(lpc)) :
+        for j in range (0,len(lpc)) :
 
             # on calcul l'angle et on en déduit la fréquence
             freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi )
@@ -198,8 +198,8 @@ def formant(signal,sample_frequence,frame_width,shift_width):
 
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
-    return frequences
 
+    return frequences
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # pre set
@@ -255,23 +255,23 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
                 f0_voiced.append(f0)
         list_fundamental_frequency.append(mean(f0_voiced))
 
-        # list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))values = []
-        # Value = []
-        #     for i in range(len(list_formant)):
-        #         elem = min(list_formant[i])
-        #         values.append(elem)
-        #
-        # value = min(values)
+        list_temp=formant(signal,sample_frequence,frame_width,shift_width)
+        values = []
+        for i in range(len(list_temp)):
+            elem = min(list_temp[i])
+            values.append(elem)
+        value = min(values)
+        list_formant.append(value)
 
-        # h = MFCC(signal, sample_frequence,frame_width,shift_width)
-        # list_MFCC.append(h[0])
+        h = MFCC(signal, sample_frequence, frame_width, shift_width)
+        list_MFCC.append(h[0])
 
     data_frame = pd.DataFrame()
     data_frame['Sexe'] = list_sexe
     data_frame['Energy'] = list_energy
     data_frame['Fundamental frequency'] = list_fundamental_frequency
-    # data_frame['Formant']=list_formant
-    # data_frame['MFCC']=list_MFCC
+    data_frame['Formant']=list_formant
+    data_frame['MFCC']=list_MFCC
 
     return data_frame
 
