@@ -7,8 +7,8 @@ from random import randint
 from os import listdir
 from xcorr import xcorr
 import warnings
-from Dev.scikit_talkbox_lpc import lpc_ref
-from Dev.filterbanks import filter_banks
+from scikit_talkbox_lpc import lpc_ref
+from filterbanks import filter_banks
 import scipy.fftpack as fft
 warnings.filterwarnings("ignore")
 
@@ -113,25 +113,25 @@ def pitch_autocorrelation(signal,sample_frequence,frame_width,shift_width,thresh
         return fundamental_frequency_per_frame
 
 def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
-    signal = normalization(signal)
+        signal=normalization(signal)
 
-    frames = framing(signal, sample_frequence, frame_width, shift_width)
+        frames=framing(signal,sample_frequence,frame_width,shift_width)
 
-    frames_energy = []
-    for frame in frames:
-        frames_energy.append(energy(frame))
+        frames_energy=[]
+        for frame in frames:
+                frames_energy.append(energy(frame))
 
-    fundamental_frequency_per_frame = []
-    for i in range(len(frames)):
-        if frames_energy[i] > threshold:  # Voiced
-            fundamental_frequency = ''
+        f0=[]
+        for i in range(len(frames)):
+                if frames_energy[i]>threshold:
+                        print('voiced')
 
-        else:  # Unvoiced
-            fundamental_frequency = 0
+                        f0.append(10)
+                else:
+                        print('unvoiced')
+                        f0.append(0)
 
-        fundamental_frequency_per_frame.append(fundamental_frequency)
-
-    return fundamental_frequency_per_frame
+        return f0
 
 def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     filtred_signal = []
@@ -144,7 +144,7 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     return filtred_signal
 
 
-def formant(signal,sample_frequence,frame_width,shift_width):
+def formant(signal,fs):
 
     #pre set
     signal = normalization(signal)
@@ -156,10 +156,10 @@ def formant(signal,sample_frequence,frame_width,shift_width):
     # scikit_talkbox_lpc.py qui retourne les prédiction des coefficient LPC
 
     # on applique le traitement a tout les frames :
-    for frame in frames:
+    for i in range(0, len(frames)):
 
         # le filtre passe haut (définit précédement)
-        filtred_frame = high_Pass(frame)
+        filtred_frame = high_Pass(frames[i])
 
         # calcul du LPC grace a la fct fournie
         temp = lpc_ref(filtred_frame, order= 10) # order peut prendre des valeurs entre 8 et 13
@@ -174,7 +174,7 @@ def formant(signal,sample_frequence,frame_width,shift_width):
         for j in range (0,len(lpc)) :
 
             # on calcul l'angle et on en déduit la fréquence
-            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi )
+            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * ( fs/8*np.pi )
             """ !!!!!!!!!! attention ici fs devra etre précisé dans main !!!!!!! """
 
 
@@ -184,10 +184,10 @@ def formant(signal,sample_frequence,frame_width,shift_width):
                 temp.sort()
         frequences.append(temp)
     # on change le type de la liste
-    frequences = frequences
+    frequences = np.array(frequences)
 
     # on trie pour les assossié plus facilement au formant
-    frequences = frequences.sort()
+    frequences = np.sort(frequences)
 
     return frequences
 
@@ -223,3 +223,4 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     result = result[:13]
 
     return result
+
