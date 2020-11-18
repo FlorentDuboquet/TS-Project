@@ -215,7 +215,7 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     powerSpectrum = []
     ntfd = 512
     for elem in signal :
-        powerSpectrum.append((np.power(np.linalg.norm(np.asarray(np.fft.fft(elem,ntfd)))),2)/ntfd)
+        powerSpectrum.append((np.linalg.norm(np.fft.fft(elem,ntfd)**2))/ntfd)
 
     # passage dans le filter bank
     result = filter_banks(powerSpectrum,sample_frequence)
