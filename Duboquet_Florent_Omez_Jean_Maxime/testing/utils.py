@@ -1,13 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 import scipy.signal as sig
 import scipy.fftpack as fft
 from scipy.io import wavfile
 
 from math import ceil
-from statistics import mean
 from os import listdir
 from random import randint
 
@@ -59,8 +57,6 @@ def plot_signal_and_energy_per_frame(file_adresse,frame_width, shift_width):
         frames_energy = []
         for frame in frames:
                 frames_energy.append(energy(frame))
-
-        plt.figure()
 
         plt.subplot(2, 1, 1)
         plt.title("Signal")
@@ -174,7 +170,7 @@ def formant(signal,sample_frequence,frame_width,shift_width):
         lpc = lpc[np.imag(lpc) >= 0]
 
         temp = []
-        for j in range(0,len(lpc)) :
+        for j in range (0,len(lpc)) :
 
             # on calcul l'angle et on en déduit la fréquence
             freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi )
@@ -192,15 +188,7 @@ def formant(signal,sample_frequence,frame_width,shift_width):
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
 
-    # noralement la fct devrait retourner l ensembles de sfréquences
-    # mais pour les besoins de notre algo de detection, nous ne retourneront que la plus petite
-    values = []
-    for i in range(len(frequences)):
-        elem = min(frequences[i])
-        values.append(elem)
-
-    value = min(values)
-    return value
+    return frequences
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # pre set
@@ -226,53 +214,10 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # passage dans le filter bank
     result = filter_banks(powerSpectrum,sample_frequence)
 
-    # Discrete Cosine Transform as given in the protocole
+    #Discrete Cosine Transform as given in the protocole
     result = fft.dct(filter_banks, type=2, axis=1, norm='ortho')
 
     # on garde que les 13 premiers
     result = result[:13]
 
-
-
-    # normalement la fct devrait resortir les 13 valeurs de la liste result mais pour
-    # notre algorithme  de selction basé sur des règles nous ne retourneront que la première valeur
-    var = result[0]
-    return var
-
-def feature_extraction (files_adresse,frame_width,shift_width,threshold):
-    list_sexe = []
-    list_fundamental_frequency = []
-    list_energy = []
-    list_formant = []
-    list_MFCC = []
-    for file_adresse in files_adresse:
-        if 'woman' in file_adresse:
-            list_sexe.append(0)
-        else:
-            list_sexe.append(1)
-
-        sample_frequence, signal = wavfile.read(file_adresse)
-
-        list_energy.append(energy(signal))
-
-        f0_voiced = []
-        for f0 in pitch_autocorrelation(signal, sample_frequence, frame_width, shift_width, threshold):
-            if f0 != 0:
-                f0_voiced.append(f0)
-        list_fundamental_frequency.append(mean(f0_voiced))
-
-        # list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))
-
-        # list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
-
-    data_frame = pd.DataFrame()
-    data_frame['Sexe'] = list_sexe
-    data_frame['Energy'] = list_energy
-    data_frame['Fundamental frequency'] = list_fundamental_frequency
-    # data_frame['Formant']=list_formant
-    # data_frame['MFCC']=list_MFCC
-
-    return data_frame
-
-def rule_based_system_accuracy (data_frame,threshold_on_energy):
-    for i in range(len(data_frame)):
+    return result
