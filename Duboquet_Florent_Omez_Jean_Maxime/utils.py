@@ -172,7 +172,7 @@ def formant(signal,sample_frequence,frame_width,shift_width):
         lpc = lpc[np.imag(lpc) >= 0]
 
         temp = []
-        for j in range (0,len(lpc)) :
+        for j in range(0,len(lpc)) :
 
             # on calcul l'angle et on en déduit la fréquence
             freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi )
@@ -191,8 +191,13 @@ def formant(signal,sample_frequence,frame_width,shift_width):
     frequences = np.sort(frequences)
 
     # noralement la fct devrait retourner l ensembles de sfréquences
-    # mais pour les besoins de notre algo de detection, nous ne retourneront que la première
-    value = frequences[0]
+    # mais pour les besoins de notre algo de detection, nous ne retourneront que la plus petite
+    values = []
+    for i in range(len(frequences)):
+        elem = min(frequences[i])
+        values.append(elem)
+
+    value = min(values)
     return value
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
