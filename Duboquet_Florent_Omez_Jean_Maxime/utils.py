@@ -190,7 +190,10 @@ def formant(signal,sample_frequence,frame_width,shift_width):
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
 
-    return frequences
+    # noralement la fct devrait retourner l ensembles de sfréquences
+    # mais pour les besoins de notre algo de detection, nous ne retourneront que la première
+    value = frequences[0]
+    return value
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # pre set
@@ -216,10 +219,15 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # passage dans le filter bank
     result = filter_banks(powerSpectrum,sample_frequence)
 
-    #Discrete Cosine Transform as given in the protocole
+    # Discrete Cosine Transform as given in the protocole
     result = fft.dct(filter_banks, type=2, axis=1, norm='ortho')
 
     # on garde que les 13 premiers
     result = result[:13]
 
-    return result
+
+
+    # normalement la fct devrait resortir les 13 valeurs de la liste result mais pour
+    # notre algorithme  de selction basé sur des règles nous ne retourneront que la première valeur
+    var = result[0]
+    return var
