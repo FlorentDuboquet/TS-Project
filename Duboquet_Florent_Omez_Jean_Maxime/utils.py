@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import scipy.signal as sig
 import scipy.fftpack as fft
 from scipy.io import wavfile
 
 from math import ceil
+from statistics import mean
 from os import listdir
 from random import randint
 
@@ -231,3 +233,41 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # notre algorithme  de selction basé sur des règles nous ne retourneront que la première valeur
     var = result[0]
     return var
+
+def feature_extraction (files_adresse,frame_width,shift_width,threshold):
+    list_sexe = []
+    list_fundamental_frequency = []
+    list_energy = []
+    list_formant = []
+    list_MFCC = []
+    for file_adresse in files_adresse:
+        if 'woman' in file_adresse:
+            list_sexe.append(0)
+        else:
+            list_sexe.append(1)
+
+        sample_frequence, signal = wavfile.read(file_adresse)
+
+        list_energy.append(energy(signal))
+
+        f0_voiced = []
+        for f0 in pitch_autocorrelation(signal, sample_frequence, frame_width, shift_width, threshold):
+            if f0 != 0:
+                f0_voiced.append(f0)
+        list_fundamental_frequency.append(mean(f0_voiced))
+
+        # list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))
+
+        # list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
+
+    data_frame = pd.DataFrame()
+    data_frame['Sexe'] = list_sexe
+    data_frame['Energy'] = list_energy
+    data_frame['Fundamental frequency'] = list_fundamental_frequency
+    # data_frame['Formant']=list_formant
+    # data_frame['MFCC']=list_MFCC
+
+    return data_frame
+
+def rule_based_system_accuracy (data_frame,threshold_on_energy):
+    for i in range(len(data_frame)):
