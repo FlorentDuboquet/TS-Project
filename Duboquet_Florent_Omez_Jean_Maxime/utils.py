@@ -1,15 +1,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
 import scipy.signal as sig
-from math import ceil
+import scipy.fftpack as fft
 from scipy.io import wavfile
-from random import randint
+
+from math import ceil
 from os import listdir
+from random import randint
+
 from xcorr import xcorr
-import warnings
 from scikit_talkbox_lpc import lpc_ref
 from filterbanks import filter_banks
-import scipy.fftpack as fft
+
+import warnings
 warnings.filterwarnings("ignore")
 
 def normalization(signal):
