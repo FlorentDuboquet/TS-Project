@@ -39,7 +39,6 @@ def framing(signal,sample_frequence,frame_width,shift_width):
 def energy(signal):
         return sum(np.abs(signal)**2)
 
-
 def random_select_utterances(folder_addresses,number_of_utterances):
         utterances=[]
         for folder_adresse in folder_addresses:
@@ -147,9 +146,7 @@ def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     filtred_signal = np.array(filtred_signal) # on change le typ de la liste avant le return
     return filtred_signal
 
-
-def formant(signal,fs):
-
+def formant(signal,sample_frequence,frame_width,shift_width):
     #pre set
     signal = normalization(signal)
     frames = framing(signal,sample_frequence,frame_width,shift_width)
@@ -160,10 +157,10 @@ def formant(signal,fs):
     # scikit_talkbox_lpc.py qui retourne les prédiction des coefficient LPC
 
     # on applique le traitement a tout les frames :
-    for i in range(0, len(frames)):
+    for frame in frames:
 
         # le filtre passe haut (définit précédement)
-        filtred_frame = high_Pass(frames[i])
+        filtred_frame = high_Pass(frame)
 
         # calcul du LPC grace a la fct fournie
         temp = lpc_ref(filtred_frame, order= 10) # order peut prendre des valeurs entre 8 et 13
@@ -178,7 +175,7 @@ def formant(signal,fs):
         for j in range (0,len(lpc)) :
 
             # on calcul l'angle et on en déduit la fréquence
-            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * ( fs/8*np.pi )
+            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi )
             """ !!!!!!!!!! attention ici fs devra etre précisé dans main !!!!!!! """
 
 
@@ -198,7 +195,6 @@ def formant(signal,fs):
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # pre set
     signal = normalization(signal)
-
 
     # preanalyse
     signal = high_Pass(signal, a=0.97)
