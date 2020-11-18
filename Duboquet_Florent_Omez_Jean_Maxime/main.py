@@ -20,7 +20,7 @@ print('\n-- TRAIN :')
 
 folder_addresses=['samples/man','samples/woman']
 
-train_files_adresse=random_select_utterances(folder_addresses,70)
+train_files_adresse=random_select_utterances(folder_addresses,50)
 
 train_data_frame=feature_extraction(train_files_adresse,frame_width,shift_width,threshold)
 
