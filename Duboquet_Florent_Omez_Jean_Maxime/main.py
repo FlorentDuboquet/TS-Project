@@ -4,15 +4,15 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from utils import random_select_utterances,plot_signal_and_energy_per_frame,energy,pitch_autocorrelation,formant,MFCC
-
+from Dev.utils import random_select_utterances,plot_signal_and_energy_per_frame,energy,pitch_autocorrelation
 
 #Energy of the voiced and unvoiced sounds
-'''
+
 utterances=random_select_utterances(['samples/man','samples/woman'],5)
 for utterance in utterances:
         plot_signal_and_energy_per_frame(utterance,90 / 1000, 90 / 1000)
-'''
+
+
 
 #Building a rule-based system
 
@@ -20,7 +20,7 @@ utterances=random_select_utterances(['samples/man','samples/woman'],15)
 
 frame_width=90/1000
 shift_width=90/1000
-threshold=50
+threshold=10
 
 list_sexes=[]
 list_f0=[]
@@ -43,16 +43,16 @@ for i in range(len(utterances)):
             f0_voiced.append(f0)
     list_f0.append(mean(f0_voiced))
 
-    list_formant.append(formant())
+    #list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))
 
-    list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
+    #list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
 
 data_frame = pd.DataFrame()
 data_frame['Sexe']=list_sexes
 data_frame['Energy']=list_energy
-data_frame['F0']=list_f0
-data_frame['Formant']=list_formant
-data_frame['MFCC']=list_MFCC
+data_frame['Fundamental frequency']=list_f0
+#data_frame['Formant']=list_formantmai
+#data_frame['MFCC']=list_MFCC
 
 
 print(data_frame)
