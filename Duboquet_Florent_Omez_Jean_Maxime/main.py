@@ -51,7 +51,7 @@ data_frame = pd.DataFrame()
 data_frame['Sexe']=list_sexe
 data_frame['Energy']=list_energy
 data_frame['Fundamental frequency']=list_fundamental_frequency
-#data_frame['Formant']=list_formantmai
+#data_frame['Formant']=list_formant
 #data_frame['MFCC']=list_MFCC
 
 print(data_frame)
