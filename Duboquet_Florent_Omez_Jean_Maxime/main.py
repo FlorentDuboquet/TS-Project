@@ -63,3 +63,4 @@ sns.heatmap(data_frame.corr())
 plt.show()
 
 for i in range(len(data_frame)):
+    print(data_frame.loc[i, ['Sexe']])

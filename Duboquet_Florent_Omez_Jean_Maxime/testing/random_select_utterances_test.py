@@ -1,3 +1,3 @@
-from ..utils import random_select_utterances
+from utils import random_select_utterances
 
-print(random_select_utterances(['samples/man','samples/woman'],5))
+print(random_select_utterances(['../samples/man','../samples/woman'],5))
