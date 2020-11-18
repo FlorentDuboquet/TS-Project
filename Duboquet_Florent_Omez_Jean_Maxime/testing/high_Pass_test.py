@@ -10,7 +10,7 @@ plt.title("Signal")
 plt.plot(signal)
 
 plt.subplot(2,1,2)
-plt.title("filtred Signal")
+plt.title("Filtred signal")
 plt.plot(filtred_sig)
 
 plt.show()

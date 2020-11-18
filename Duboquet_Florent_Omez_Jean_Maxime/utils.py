@@ -181,23 +181,18 @@ def formant(signal,sample_frequence,frame_width,shift_width):
         lpc = lpc[np.imag(lpc) >= 0]
 
         temp = []
-        for j in range (0,len(lpc)) :
-
+        for j in range(0,len(lpc)) :
             # on calcul l'angle et on en déduit la fréquence
-            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi )
-            """ !!!!!!!!!! attention ici fs devra etre précisé dans main !!!!!!! """
-
+            freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi)
 
             # la frequence doit etre comprise entre les seuils
             if (freq<20000 and freq>500):
                 temp.append(freq)
                 temp.sort()
         frequences.append(temp)
-    # on change le type de la liste
-    frequences = np.array(frequences)
 
-    # on trie pour les assossié plus facilement au formant
-    frequences = np.sort(frequences)
+    # on trie pour les assossier plus facilement au formant
+    frequences.sort()
 
     return frequences
 
