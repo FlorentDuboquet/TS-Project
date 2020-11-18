@@ -117,25 +117,25 @@ def pitch_autocorrelation(signal,sample_frequence,frame_width,shift_width,thresh
         return fundamental_frequency_per_frame
 
 def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
-        signal=normalization(signal)
+    signal = normalization(signal)
 
-        frames=framing(signal,sample_frequence,frame_width,shift_width)
+    frames = framing(signal, sample_frequence, frame_width, shift_width)
 
-        frames_energy=[]
-        for frame in frames:
-                frames_energy.append(energy(frame))
+    frames_energy = []
+    for frame in frames:
+        frames_energy.append(energy(frame))
 
-        f0=[]
-        for i in range(len(frames)):
-                if frames_energy[i]>threshold:
-                        print('voiced')
+    fundamental_frequency_per_frame = []
+    for i in range(len(frames)):
+        if frames_energy[i] > threshold:  # Voiced
+            fundamental_frequency = 0
 
-                        f0.append(10)
-                else:
-                        print('unvoiced')
-                        f0.append(0)
+        else:  # Unvoiced
+            fundamental_frequency = 0
 
-        return f0
+        fundamental_frequency_per_frame.append(fundamental_frequency)
+
+    return fundamental_frequency_per_frame
 
 def high_Pass(signal, a=0.67):  # a est compris dans [0.62,0.67]
     filtred_signal = []
