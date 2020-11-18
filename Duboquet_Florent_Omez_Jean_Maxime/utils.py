@@ -244,12 +244,12 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
 
         list_energy.append(energy(signal))
 
-        f0_voiced = []
-        for f0 in pitch_autocorrelation(signal, sample_frequence, frame_width, shift_width, threshold):
-            if f0 != 0:
-                f0_voiced.append(f0)
-        list_fundamental_frequency.append(mean(f0_voiced))
-
+        fundamental_frequency_voiced = []
+        for fundamental_frequency in pitch_autocorrelation(signal, sample_frequence, frame_width, shift_width, threshold):
+            if fundamental_frequency != 0:
+                fundamental_frequency_voiced.append(fundamental_frequency)
+        list_fundamental_frequency.append(mean(fundamental_frequency_voiced))
+        '''
         list_temp=formant(signal,sample_frequence,frame_width,shift_width)
         values = []
         for i in range(len(list_temp)):
@@ -260,13 +260,13 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
 
         h = MFCC(signal, sample_frequence, frame_width, shift_width)
         list_MFCC.append(h[0])
-
+        '''
     data_frame = pd.DataFrame()
     data_frame['Sexe'] = list_sexe
     data_frame['Energy'] = list_energy
     data_frame['Fundamental frequency'] = list_fundamental_frequency
-    data_frame['Formant']=list_formant
-    data_frame['MFCC']=list_MFCC
+    #data_frame['Formant']=list_formant
+    #data_frame['MFCC']=list_MFCC
 
     return data_frame
 
