@@ -229,16 +229,16 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     return result
 
 def feature_extraction (files_adresse,frame_width,shift_width,threshold):
-    list_sexe = []
+    list_sex = []
     list_fundamental_frequency = []
     list_energy = []
     list_formant = []
     list_MFCC = []
     for file_adresse in files_adresse:
         if 'woman' in file_adresse:
-            list_sexe.append(1)
+            list_sex.append(1)
         else:
-            list_sexe.append(0)
+            list_sex.append(0)
 
         sample_frequence, signal = wavfile.read(file_adresse)
 
@@ -262,7 +262,7 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
         list_MFCC.append(h[0])
         '''
     data_frame = pd.DataFrame()
-    data_frame['Sexe'] = list_sexe
+    data_frame['Sex'] = list_sex
     data_frame['Energy'] = list_energy
     data_frame['Fundamental frequency'] = list_fundamental_frequency
     #data_frame['Formant']=list_formant
@@ -274,9 +274,9 @@ def rule_based_system_on_energy_accurancy (data_frame,threshold_on_energy):
     data_frame_size=len(data_frame)
     number_of_correct_answer=0
     for i in data_frame.index.values:
-        if data_frame.loc[i, 'Energy'] <= threshold_on_energy and data_frame.loc[i, 'Sexe'] == 0:
+        if data_frame.loc[i, 'Energy'] <= threshold_on_energy and data_frame.loc[i, 'Sex'] == 0:
             number_of_correct_answer+=1
-        if data_frame.loc[i, 'Energy'] > threshold_on_energy and data_frame.loc[i, 'Sexe'] == 1 :
+        if data_frame.loc[i, 'Energy'] > threshold_on_energy and data_frame.loc[i, 'Sex'] == 1 :
             number_of_correct_answer+=1
     accurancy=number_of_correct_answer/data_frame_size
 
@@ -286,9 +286,9 @@ def rule_based_system_on_fundamental_frequency_accurancy (data_frame,threshold_o
     data_frame_size=len(data_frame)
     number_of_correct_answer=0
     for i in data_frame.index.values:
-        if data_frame.loc[i, 'Fundamental frequency'] <= threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 1:
+        if data_frame.loc[i, 'Fundamental frequency'] <= threshold_on_fundamental_frequency and data_frame.loc[i, 'Sex'] == 1:
             number_of_correct_answer+=1
-        if data_frame.loc[i, 'Fundamental frequency'] > threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 0:
+        if data_frame.loc[i, 'Fundamental frequency'] > threshold_on_fundamental_frequency and data_frame.loc[i, 'Sex'] == 0:
             number_of_correct_answer+=1
     accurancy=number_of_correct_answer/data_frame_size
 
