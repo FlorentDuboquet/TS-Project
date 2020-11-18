@@ -191,6 +191,7 @@ def formant(signal,sample_frequence,frame_width,shift_width):
 
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
+    #return frequences
 
     # noralement la fct devrait retourner l ensembles de sfréquences
     # mais pour les besoins de notre algo de detection, nous ne retourneront que la plus petite
