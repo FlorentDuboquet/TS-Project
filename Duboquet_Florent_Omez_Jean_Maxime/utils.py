@@ -236,9 +236,9 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
     list_MFCC = []
     for file_adresse in files_adresse:
         if 'woman' in file_adresse:
-            list_sexe.append(0)
-        else:
             list_sexe.append(1)
+        else:
+            list_sexe.append(0)
 
         sample_frequence, signal = wavfile.read(file_adresse)
 
@@ -274,9 +274,9 @@ def rule_based_system_on_energy_accurancy (data_frame,threshold_on_energy):
     data_frame_size=len(data_frame)
     number_of_correct_answer=0
     for i in data_frame.index.values:
-        if data_frame.loc[i, 'Energy'] <= threshold_on_energy and data_frame.loc[i, 'Sexe'] == 1:
+        if data_frame.loc[i, 'Energy'] <= threshold_on_energy and data_frame.loc[i, 'Sexe'] == 0:
             number_of_correct_answer+=1
-        if data_frame.loc[i, 'Energy'] > threshold_on_energy and data_frame.loc[i, 'Sexe'] == 0 :
+        if data_frame.loc[i, 'Energy'] > threshold_on_energy and data_frame.loc[i, 'Sexe'] == 1 :
             number_of_correct_answer+=1
     accurancy=number_of_correct_answer/data_frame_size
 
@@ -286,9 +286,9 @@ def rule_based_system_on_fundamental_frequency_accurancy (data_frame,threshold_o
     data_frame_size=len(data_frame)
     number_of_correct_answer=0
     for i in data_frame.index.values:
-        if data_frame.loc[i, 'Fundamental frequency'] <= threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 0:
+        if data_frame.loc[i, 'Fundamental frequency'] <= threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 1:
             number_of_correct_answer+=1
-        if data_frame.loc[i, 'Fundamental frequency'] > threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 1:
+        if data_frame.loc[i, 'Fundamental frequency'] > threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 0:
             number_of_correct_answer+=1
     accurancy=number_of_correct_answer/data_frame_size
 
