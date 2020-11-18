@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import scipy.signal as sig
 import scipy.fftpack as fft
 from scipy.io import wavfile
 
 from math import ceil
+from statistics import mean
 from os import listdir
 from random import randint
 
@@ -43,8 +45,12 @@ def random_select_utterances(folder_addresses,number_of_utterances):
         utterances=[]
         for folder_adresse in folder_addresses:
                 file_adresses = listdir(folder_adresse)
-                for i in range(number_of_utterances):
-                        utterances.append(folder_adresse+'/'+file_adresses[randint(0,len(file_adresses)-1)])
+                number_of_selection=0
+                while number_of_selection<number_of_utterances:
+                        file_adresse=folder_adresse+'/'+file_adresses[randint(0,len(file_adresses)-1)]
+                        if file_adresse not in utterances:
+                                utterances.append(file_adresse)
+                                number_of_selection+=1
         return utterances
 
 def plot_signal_and_energy_per_frame(file_adresse,frame_width, shift_width):
@@ -57,6 +63,8 @@ def plot_signal_and_energy_per_frame(file_adresse,frame_width, shift_width):
         frames_energy = []
         for frame in frames:
                 frames_energy.append(energy(frame))
+
+        plt.figure()
 
         plt.subplot(2, 1, 1)
         plt.title("Signal")
@@ -80,31 +88,34 @@ def pitch_autocorrelation(signal,sample_frequence,frame_width,shift_width,thresh
         fundamental_frequency_per_frame=[]
         for i in range(len(frames)):
                 if frames_energy[i]>threshold: #Voiced
-                        lags, corr = xcorr(frames[i], maxlag=int(sample_frequence/50))
+                        try:
+                                lags, corr = xcorr(frames[i], maxlag=int(sample_frequence/50))
 
-                        peaks,properties=sig.find_peaks(corr)
+                                peaks,properties=sig.find_peaks(corr)
 
-                        peaks_prominences=sig.peak_prominences(signal,peaks)[0]
+                                peaks_prominences=sig.peak_prominences(signal,peaks)[0]
 
-                        peaks_prominences=list(peaks_prominences)
-                        index_max_1=peaks_prominences.index(max(peaks_prominences))
+                                peaks_prominences=list(peaks_prominences)
+                                index_max_1=peaks_prominences.index(max(peaks_prominences))
 
-                        peaks_prominences_copy=peaks_prominences
-                        del peaks_prominences_copy[index_max_1]
+                                peaks_prominences_copy=peaks_prominences
+                                del peaks_prominences_copy[index_max_1]
 
-                        index_max_2 = peaks_prominences_copy.index(max(peaks_prominences_copy))
+                                index_max_2 = peaks_prominences_copy.index(max(peaks_prominences_copy))
 
-                        if index_max_2 >= index_max_1:
-                                index_max_2+=1
+                                if index_max_2 >= index_max_1:
+                                        index_max_2+=1
 
-                        postion_max_1=peaks[index_max_1]
-                        postion_max_2 = peaks[index_max_2]
+                                postion_max_1=peaks[index_max_1]
+                                postion_max_2 = peaks[index_max_2]
 
-                        distance=abs(postion_max_1-postion_max_2)
+                                distance=abs(postion_max_1-postion_max_2)
 
-                        fundamental_period=distance/sample_frequence
+                                fundamental_period=distance/sample_frequence
 
-                        fundamental_frequency=1/fundamental_period
+                                fundamental_frequency=1/fundamental_period
+                        except:
+                                fundamental_frequency = 0
 
                 else:# Unvoiced
                         fundamental_frequency=0
@@ -188,7 +199,10 @@ def formant(signal,sample_frequence,frame_width,shift_width):
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
 
-    return frequences
+    # noralement la fct devrait retourner l ensembles de sfréquences
+    # mais pour les besoins de notre algo de detection, nous ne retourneront que la première
+    value = frequences[0]
+    return value
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # pre set
@@ -214,10 +228,75 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # passage dans le filter bank
     result = filter_banks(powerSpectrum,sample_frequence)
 
-    #Discrete Cosine Transform as given in the protocole
+    # Discrete Cosine Transform as given in the protocole
     result = fft.dct(filter_banks, type=2, axis=1, norm='ortho')
 
     # on garde que les 13 premiers
     result = result[:13]
 
-    return result
+
+
+    # normalement la fct devrait resortir les 13 valeurs de la liste result mais pour
+    # notre algorithme  de selction basé sur des règles nous ne retourneront que la première valeur
+    var = result[0]
+    return var
+
+def feature_extraction (files_adresse,frame_width,shift_width,threshold):
+    list_sexe = []
+    list_fundamental_frequency = []
+    list_energy = []
+    list_formant = []
+    list_MFCC = []
+    for file_adresse in files_adresse:
+        if 'woman' in file_adresse:
+            list_sexe.append(0)
+        else:
+            list_sexe.append(1)
+
+        sample_frequence, signal = wavfile.read(file_adresse)
+
+        list_energy.append(energy(signal))
+
+        f0_voiced = []
+        for f0 in pitch_autocorrelation(signal, sample_frequence, frame_width, shift_width, threshold):
+            if f0 != 0:
+                f0_voiced.append(f0)
+        list_fundamental_frequency.append(mean(f0_voiced))
+
+        # list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))
+
+        # list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
+
+    data_frame = pd.DataFrame()
+    data_frame['Sexe'] = list_sexe
+    data_frame['Energy'] = list_energy
+    data_frame['Fundamental frequency'] = list_fundamental_frequency
+    # data_frame['Formant']=list_formant
+    # data_frame['MFCC']=list_MFCC
+
+    return data_frame
+
+def rule_based_system_on_energy_accurancy (data_frame,threshold_on_energy):
+    data_frame_size=len(data_frame)
+    number_of_correct_answer=0
+    for i in data_frame.index.values:
+        if data_frame.loc[i, 'Energy'] <= threshold_on_energy and data_frame.loc[i, 'Sexe'] == 1:
+            number_of_correct_answer+=1
+        if data_frame.loc[i, 'Energy'] > threshold_on_energy and data_frame.loc[i, 'Sexe'] == 0 :
+            number_of_correct_answer+=1
+    accurancy=number_of_correct_answer/data_frame_size
+
+    return accurancy
+
+def rule_based_system_on_fundamental_frequency_accurancy (data_frame,threshold_on_fundamental_frequency):
+    data_frame_size=len(data_frame)
+    number_of_correct_answer=0
+    for i in data_frame.index.values:
+        if data_frame.loc[i, 'Fundamental frequency'] <= threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 0:
+            number_of_correct_answer+=1
+        if data_frame.loc[i, 'Fundamental frequency'] > threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 1:
+            number_of_correct_answer+=1
+    accurancy=number_of_correct_answer/data_frame_size
+
+    return accurancy
+

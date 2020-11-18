@@ -45,8 +45,12 @@ def random_select_utterances(folder_addresses,number_of_utterances):
         utterances=[]
         for folder_adresse in folder_addresses:
                 file_adresses = listdir(folder_adresse)
-                for i in range(number_of_utterances):
-                        utterances.append(folder_adresse+'/'+file_adresses[randint(0,len(file_adresses)-1)])
+                number_of_selection=0
+                while number_of_selection<number_of_utterances:
+                        file_adresse=folder_adresse+'/'+file_adresses[randint(0,len(file_adresses)-1)]
+                        if file_adresse not in utterances:
+                                utterances.append(file_adresse)
+                                number_of_selection+=1
         return utterances
 
 def plot_signal_and_energy_per_frame(file_adresse,frame_width, shift_width):
@@ -84,31 +88,34 @@ def pitch_autocorrelation(signal,sample_frequence,frame_width,shift_width,thresh
         fundamental_frequency_per_frame=[]
         for i in range(len(frames)):
                 if frames_energy[i]>threshold: #Voiced
-                        lags, corr = xcorr(frames[i], maxlag=int(sample_frequence/50))
+                        try:
+                                lags, corr = xcorr(frames[i], maxlag=int(sample_frequence/50))
 
-                        peaks,properties=sig.find_peaks(corr)
+                                peaks,properties=sig.find_peaks(corr)
 
-                        peaks_prominences=sig.peak_prominences(signal,peaks)[0]
+                                peaks_prominences=sig.peak_prominences(signal,peaks)[0]
 
-                        peaks_prominences=list(peaks_prominences)
-                        index_max_1=peaks_prominences.index(max(peaks_prominences))
+                                peaks_prominences=list(peaks_prominences)
+                                index_max_1=peaks_prominences.index(max(peaks_prominences))
 
-                        peaks_prominences_copy=peaks_prominences
-                        del peaks_prominences_copy[index_max_1]
+                                peaks_prominences_copy=peaks_prominences
+                                del peaks_prominences_copy[index_max_1]
 
-                        index_max_2 = peaks_prominences_copy.index(max(peaks_prominences_copy))
+                                index_max_2 = peaks_prominences_copy.index(max(peaks_prominences_copy))
 
-                        if index_max_2 >= index_max_1:
-                                index_max_2+=1
+                                if index_max_2 >= index_max_1:
+                                        index_max_2+=1
 
-                        postion_max_1=peaks[index_max_1]
-                        postion_max_2 = peaks[index_max_2]
+                                postion_max_1=peaks[index_max_1]
+                                postion_max_2 = peaks[index_max_2]
 
-                        distance=abs(postion_max_1-postion_max_2)
+                                distance=abs(postion_max_1-postion_max_2)
 
-                        fundamental_period=distance/sample_frequence
+                                fundamental_period=distance/sample_frequence
 
-                        fundamental_frequency=1/fundamental_period
+                                fundamental_frequency=1/fundamental_period
+                        except:
+                                fundamental_frequency = 0
 
                 else:# Unvoiced
                         fundamental_frequency=0
@@ -275,5 +282,27 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
 
     return data_frame
 
-def rule_based_system_accuracy (data_frame,threshold_on_energy):
-    for i in range(len(data_frame)):
+def rule_based_system_on_energy_accurancy (data_frame,threshold_on_energy):
+    data_frame_size=len(data_frame)
+    number_of_correct_answer=0
+    for i in data_frame.index.values:
+        if data_frame.loc[i, 'Energy'] <= threshold_on_energy and data_frame.loc[i, 'Sexe'] == 1:
+            number_of_correct_answer+=1
+        if data_frame.loc[i, 'Energy'] > threshold_on_energy and data_frame.loc[i, 'Sexe'] == 0 :
+            number_of_correct_answer+=1
+    accurancy=number_of_correct_answer/data_frame_size
+
+    return accurancy
+
+def rule_based_system_on_fundamental_frequency_accurancy (data_frame,threshold_on_fundamental_frequency):
+    data_frame_size=len(data_frame)
+    number_of_correct_answer=0
+    for i in data_frame.index.values:
+        if data_frame.loc[i, 'Fundamental frequency'] <= threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 0:
+            number_of_correct_answer+=1
+        if data_frame.loc[i, 'Fundamental frequency'] > threshold_on_fundamental_frequency and data_frame.loc[i, 'Sexe'] == 1:
+            number_of_correct_answer+=1
+    accurancy=number_of_correct_answer/data_frame_size
+
+    return accurancy
+
