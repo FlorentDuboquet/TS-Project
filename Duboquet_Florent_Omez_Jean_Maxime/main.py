@@ -5,11 +5,11 @@ from os import listdir
 from utils import random_select_utterances,plot_signal_and_energy_per_frame,energy,pitch_autocorrelation,feature_extraction,rule_based_system_on_energy_accurancy,rule_based_system_on_fundamental_frequency_accurancy
 
 print('\n--- Energy of the voiced and unvoiced sounds')
-'''
+
 utterances=random_select_utterances(['samples/man','samples/woman'],5)
 for utterance in utterances:
         plot_signal_and_energy_per_frame(utterance,90 / 1000, 90 / 1000)
-'''
+
 print('\n--- Building a rule-based system')
 
 frame_width=90/1000
