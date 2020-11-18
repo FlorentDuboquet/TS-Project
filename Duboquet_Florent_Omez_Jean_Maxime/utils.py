@@ -198,17 +198,8 @@ def formant(signal,sample_frequence,frame_width,shift_width):
 
     # on trie pour les assossié plus facilement au formant
     frequences = np.sort(frequences)
-    #return frequences
+    return frequences
 
-    # noralement la fct devrait retourner l ensembles de sfréquences
-    # mais pour les besoins de notre algo de detection, nous ne retourneront que la plus petite
-    values = []
-    for i in range(len(frequences)):
-        elem = min(frequences[i])
-        values.append(elem)
-
-    value = min(values)
-    return value
 
 def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # pre set
@@ -240,12 +231,7 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # on garde que les 13 premiers
     result = result[:13]
 
-
-
-    # normalement la fct devrait resortir les 13 valeurs de la liste result mais pour
-    # notre algorithme  de selction basé sur des règles nous ne retourneront que la première valeur
-    var = result[0]
-    return var
+    return result
 
 def feature_extraction (files_adresse,frame_width,shift_width,threshold):
     list_sexe = []
@@ -269,9 +255,16 @@ def feature_extraction (files_adresse,frame_width,shift_width,threshold):
                 f0_voiced.append(f0)
         list_fundamental_frequency.append(mean(f0_voiced))
 
-        # list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))
+        # list_formant.append(formant(signal,sample_frequence,frame_width,shift_width))values = []
+        # Value = []
+        #     for i in range(len(list_formant)):
+        #         elem = min(list_formant[i])
+        #         values.append(elem)
+        #
+        # value = min(values)
 
-        # list_MFCC.append(MFCC(signal, sample_frequence,frame_width,shift_width))
+        # h = MFCC(signal, sample_frequence,frame_width,shift_width)
+        # list_MFCC.append(h[0])
 
     data_frame = pd.DataFrame()
     data_frame['Sexe'] = list_sexe
