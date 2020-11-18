@@ -162,36 +162,36 @@ def formant(signal,sample_frequence,frame_width,shift_width):
 
     frequences=[]
 
-    # ici on va devoir utiliser la fct lpc_ref fournie dans
-    # scikit_talkbox_lpc.py qui retourne les prédiction des coefficient LPC
+    # here we will have to use the fct lpc_ref provided in
+    # scikit_talkbox_lpc.py which returns LPC coefficient predictions
 
-    # on applique le traitement a tout les frames :
+    # we apply the treatment to all the frames :
     for frame in frames:
 
-        # le filtre passe haut (définit précédement)
+        # the high-pass filter (previously defined)
         filtred_frame = high_Pass(frame)
 
-        # calcul du LPC grace a la fct fournie
+        # calculation of the LPC thanks to the provided fct
         temp = lpc_ref(filtred_frame, order= 10) # order peut prendre des valeurs entre 8 et 13
 
-        # on calcule les racines du LPC :
+        # compute the roots  :
         lpc = np.roots(temp)
 
-        # on ne conserve que l'un des deux complexes conjugués
+        # only one of the two conjugated complexes is retained
         lpc = lpc[np.imag(lpc) >= 0]
 
         temp = []
         for j in range(0,len(lpc)) :
-            # on calcul l'angle et on en déduit la fréquence
+            # the angle is calculated and the frequency is deduced from it
             freq = np.arctan2(np.imag(lpc[j]),np.real(lpc[j])) * (sample_frequence/8*np.pi)
 
-            # la frequence doit etre comprise entre les seuils
+            # the frequency must be between the thresholds
             if (freq<20000 and freq>500):
                 temp.append(freq)
                 temp.sort()
         frequences.append(temp)
 
-    # on trie pour les assossier plus facilement au formant
+    # sorting
     frequences.sort()
 
     return frequences
@@ -203,7 +203,7 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     # preanalyse
     signal = high_Pass(signal, a=0.97)
 
-    # division en frames
+    # framing
     signal = framing(signal,sample_frequence,frame_width,shift_width)
 
     # hamming
@@ -217,13 +217,13 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     for elem in signal :
         powerSpectrum.append((np.linalg.norm(np.fft.fft(elem,ntfd)**2))/ntfd)
 
-    # passage dans le filter bank
+    # passage through the filter bank
     result = filter_banks(powerSpectrum,sample_frequence)
 
-    # Discrete Cosine Transform as given in the protocole
+    # Discrete cosine transformation as foreseen in the protocol
     result = fft.dct(filter_banks, type=2, axis=1, norm='ortho')
 
-    # on garde que les 13 premiers
+    # we keep only the first 13
     result = result[:13]
 
     return result
