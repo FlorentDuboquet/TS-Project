@@ -127,7 +127,7 @@ def pitch_cepstrum(signal,sample_frequence,frame_width,shift_width,threshold):
     fundamental_frequency_per_frame = []
     for i in range(len(frames)):
         if frames_energy[i] > threshold:  # Voiced
-            fundamental_frequency = 0
+            fundamental_frequency = 'to implement'
 
         else:  # Unvoiced
             fundamental_frequency = 0
@@ -223,4 +223,3 @@ def MFCC (signal, sample_frequence,frame_width,shift_width) :
     result = result[:13]
 
     return result
-
